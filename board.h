@@ -9,13 +9,13 @@ public:
 	 */
 	enum ePiece : char {
 		empt = 0,
-		wPawn,
+		wPawn, // white pieces
 		wKnight,
 		wBishop,
 		wTower,
 		wQueen,
 		wKing,
-		bPawn,
+		bPawn, // black pieces
 		bKnight,
 		bBishop,
 		bTower,
@@ -40,19 +40,21 @@ public:
 	};
 
 	/** tBoard is an array 8x8 of ePiece
+	 * CONVENTION: tBoard[Letter][number]
 	 */
 	typedef std::array < std::array<ePiece, 8>, 8 > tBoard;
 
 	/** A position is a letter [A;H] and a number [1;8]
 	 */
-	struct Pos{
-		short let, num;
+	struct sPos{
+		unsigned char let, num;
 	};
 
-	/** A move is an initial position and a final position.
+	/** A move is an Initial position and a Last position.
 	 */
 	struct sMove{
-		Pos fPos, tPos;
+		sPos iPos;
+		sPos lPos;
 	};
 
 private:
@@ -71,9 +73,13 @@ public:
 	 */
 	eBoardStatus getboard(tBoard &retBoard);
 
-	/** */
+	/** Play a move */
 	eMoveResp addMove(sMove move);
 
 private:
+	/** do move in board */
 	inline void _doMove(sMove move);
+
+	bool _movementPawn(sMove move);
+	bool _movementKnight(sMove move);
 };

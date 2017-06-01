@@ -4,88 +4,89 @@ Board::Board()
 {
 
 	for (size_t l = 0; l < 8; l++){
+		// fill empties ...
 		for (size_t n = 2; n < 6; n++){
-			board[n][l] = empt;
+			board[l][n] = empt;
 		}
-		board[1][l] = wPawn;
-		board[6][l] = bPawn;
+		// pawns ...
+		board[l][1] = wPawn;
+		board[l][6] = bPawn;
 	}
-	board[0][0] = board[0][7] = wTower;
-	board[7][0] = board[7][7] = bTower;
+	// towers ...
+	board[0][0] = board[7][0] = wTower;
+	board[0][7] = board[7][7] = bTower;
 
-	board[0][1] = board[0][6] = wKnight;
-	board[7][1] = board[7][6] = bKnight;
+	// knights ...
+	board[1][0] = board[6][0] = wKnight;
+	board[1][7] = board[6][7] = bKnight;
 
-	board[0][2] = board[0][5] = wBishop;
-	board[7][2] = board[7][5] = bBishop;
+	// bishops ...
+	board[2][0] = board[5][0] = wBishop;
+	board[2][7] = board[5][7] = bBishop;
 
-	board[0][3] = wQueen;
-	board[7][3] = bQueen;
-
-	board[0][4] = wKing;
-	board[7][4] = bKing;
+	// and others stuffs.
+	board[3][0] = wQueen;
+	board[3][7] = bQueen;
+	board[4][0] = wKing;
+	board[4][7] = bKing;
 }
 
 
-Board::~Board()
-{
+Board::~Board(){
 }
 
 Board::eBoardStatus Board::getboard(Board::tBoard &retBoard){
 	for (size_t l = 0; l < 8; l++)
 		for (size_t n = 0; n < 0; n++)
-			retBoard[n][l] = board[n][l];
+			retBoard[l][n] = board[l][n];
 	return status;
 }
 
 Board::eMoveResp Board::addMove(Board::sMove move){
-	int flet = move.fPos.let,
-	    fnum = move.fPos.num;
-	int tlet = move.tPos.let,
-	    tnum = move.tPos.num;
+	unsigned char ilet = move.iPos.let,
+	    					inum = move.iPos.num;
+	unsigned char llet = move.lPos.let,
+	    					lnum = move.lPos.num;
 
 	// check valid pos
-	if(fnum > 8 && fnum < 0 &&
-	   flet > 8 && flet < 0 &&
-	   tnum > 8 && tnum  < 0 &&
-	   tlet > 8 && tlet < 0)
-	    return ilegalMove;
+	if(inum > 8 && ilet > 8 && lnum > 8 && llet > 8)
+	  return ilegalMove;
 
-	oldPiece = board[tnum][tlet];
+	ePiece oldPiece = board[let][lnum];
 
 	if (whiteTurn){
 		// check if to position isn't a white piece
-		if (board[fnum][flet] < wPawn && board[fnum][flet] > wKing)
+		if (board[ilet][inum] < wPawn && board[ilet][inum] > wKing)
 			return ilegalMove;
 
-		switch (board[fnum][flet]) {
+		switch (board[ilet][inum]) {
 		case wPawn:
 			// one space to forward
-			if(tnum == fnum+1 && flet == tlet && board[tnum][tlet] == empt){
+			if(lnum == inum+1 && ilet == llet && board[lnum][llet] == empt){
 				_doMove(move);
 				return legalMove;
 			}
 			// double movement
-			if(fnum == 1 && tnum == 3 && flet == tlet && board[2][tlet] == board[3][tlet] == empt){
+			if(inum == 1 && lnum == 3 && ilet == llet && board[2][llet] == board[3][llet] == empt){
 				_doMove(move);
 				return legalMove;
 			}
 			// eat
-			if(tnum == fnum+1 && (tlet == flet+1 || tlet == flet-1) && board[tnum][tlet] > wKing){
+			if(lnum == inum+1 && (llet == ilet+1 || llet == ilet-1) && board[lnum][llet] > wKing){
 				_doMove(move);
 				return legalMove;
 			}
 			break;
 		case wKnight:
 			// check valid movement
-			if( (tnum == fnum - 1 && tlet == flet + 2) || // up left
-			    (tnum == fnum + 1 && tlet == flet + 2) || // up right
-			    (tnum == fnum - 2 && tlet == flet + 1) || // left up
-			    (tnum == fnum + 2 && tlet == flet + 1) || // right up
-					(tnum == fnum - 2 && tlet == flet - 1) || // left down
-					(tnum == fnum + 2 && tlet == flet - 1) || // right down
-					(tnum == fnum - 1 && tlet == flet - 2) || // down left
-					(tnum == fnum + 1 && tlet == flet - 2) ){  // down right
+			if( (lnum == inum - 1 && llet == ilet + 2) || // up left
+			    (lnum == inum + 1 && llet == ilet + 2) || // up right
+			    (lnum == inum - 2 && llet == ilet + 1) || // left up
+			    (lnum == inum + 2 && llet == ilet + 1) || // right up
+					(lnum == inum - 2 && llet == ilet - 1) || // left down
+					(lnum == inum + 2 && llet == ilet - 1) || // right down
+					(lnum == inum - 1 && llet == ilet - 2) || // down left
+					(lnum == inum + 1 && llet == ilet - 2) ){  // down right
 				_doMove(move);
 				return legalMove;
 			}
@@ -104,6 +105,57 @@ Board::eMoveResp Board::addMove(Board::sMove move){
 }
 
 void Board::_doMove(sMove move){
-	board[move.tPos.let][.tPos.num] = board[move.fPos.let][.fPos.num];
-	board[move.fPos.let][.fPos.num] = empt;
+	board[move.lPos.let][.lPos.num] = board[move.iPos.let][.iPos.num];
+	board[move.iPos.let][.iPos.num] = empt;
+}
+
+bool Board::_movementPawn(sMove move){
+	unsigned char ilet = move.iPos.let,
+	    					inum = move.iPos.num;
+	unsigned char llet = move.lPos.let,
+	    					lnum = move.lPos.num;
+
+	short T = 1; //< 1 when whiteTurn, -1 if not
+	if(!whiteTurn)
+		T = -1;
+
+	// one space to forward
+	if(lnum == inum+T && ilet == llet && board[llet][lnum] == empt)
+		return true;
+
+	// double movement
+	if(inum == 1 && lnum == 3 && ilet == llet && board[2][llet] == board[3][llet] == empt){
+			if(whiteTurn && inum == 1 && lnum == 3 && board[2][llet] == empt && board[3][llet] == empt)
+				return true;
+			if(!whiteTurn && inum == 6 && lnum == 4 && board[7][llet] == empt && board[4][llet] == empt)
+				return true;
+	}
+
+	// eat
+	if(lnum == inum+T && (llet == ilet+1 || llet == ilet-1) && board[lnum][llet] > wKing){
+		if(whiteTurn && board[lnum][llet] >= bPawn && board[lnum][llet] <= bQueen)
+			return true;
+		if(!whiteTurn && board[lnum][llet] >= wPawn && board[lnum][llet] <= wQueen)
+			return true;
+	}
+	return false;
+}
+
+bool Board::_movementKnight(sMove move){
+	unsigned char ilet = move.iPos.let,
+	    					inum = move.iPos.num;
+	unsigned char llet = move.lPos.let,
+	    					lnum = move.lPos.num;
+
+	if( (llet == ilet - 1 && lnum == inum + 2) || // up left
+			(llet == ilet + 1 && lnum == inum + 2) || // up right
+			(llet == ilet - 2 && lnum == inum + 1) || // left up
+			(llet == ilet + 2 && lnum == inum + 1) || // right up
+			(llet == ilet - 2 && lnum == inum - 1) || // left down
+			(llet == ilet + 2 && lnum == inum - 1) || // right down
+			(llet == ilet - 1 && lnum == inum - 2) || // down left
+			(llet == ilet + 1 && lnum == inum - 2) ){  // down right
+		return true;
+	}
+	return false;
 }
