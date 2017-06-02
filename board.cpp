@@ -52,56 +52,24 @@ Board::eMoveResp Board::addMove(Board::sMove move){
 	if(inum > 8 && ilet > 8 && lnum > 8 && llet > 8)
 	  return ilegalMove;
 
-	ePiece oldPiece = board[let][lnum];
+	// check valid pieces
+	if(board[llet][lnum] == empt)
+		return ilegalMove;
+	if(whiteTurn && board[ilet][inum] >= bPawn && board[ilet][inum] <= bKing)
+	  return ilegalMove;
+	if(!whiteTurn && board[ilet][inum] >= wPawn && board[ilet][inum] <= wKing)
+	  return ilegalMove;
 
-	if (whiteTurn){
-		// check if to position isn't a white piece
-		if (board[ilet][inum] < wPawn && board[ilet][inum] > wKing)
-			return ilegalMove;
+	// check legal capture
+	if(whiteTurn && board[llet][lnum] >= wPawn && board[llet][lnum] <= wKing)
+	  return ilegalMove;
+	if(!whiteTurn && board[llet][lnum] >= bPawn && board[llet][lnum] <= bKing)
+	  return ilegalMove;
 
-		switch (board[ilet][inum]) {
-		case wPawn:
-			// one space to forward
-			if(lnum == inum+1 && ilet == llet && board[lnum][llet] == empt){
-				_doMove(move);
-				return legalMove;
-			}
-			// double movement
-			if(inum == 1 && lnum == 3 && ilet == llet && board[2][llet] == board[3][llet] == empt){
-				_doMove(move);
-				return legalMove;
-			}
-			// eat
-			if(lnum == inum+1 && (llet == ilet+1 || llet == ilet-1) && board[lnum][llet] > wKing){
-				_doMove(move);
-				return legalMove;
-			}
-			break;
-		case wKnight:
-			// check valid movement
-			if( (lnum == inum - 1 && llet == ilet + 2) || // up left
-			    (lnum == inum + 1 && llet == ilet + 2) || // up right
-			    (lnum == inum - 2 && llet == ilet + 1) || // left up
-			    (lnum == inum + 2 && llet == ilet + 1) || // right up
-					(lnum == inum - 2 && llet == ilet - 1) || // left down
-					(lnum == inum + 2 && llet == ilet - 1) || // right down
-					(lnum == inum - 1 && llet == ilet - 2) || // down left
-					(lnum == inum + 1 && llet == ilet - 2) ){  // down right
-				_doMove(move);
-				return legalMove;
-			}
-			break;
-		case wBishop:
-			break;
-		case wTower:
-			break;
-		case wQueen:
-			break;
-		case wKing:
-			break;
-		}
-	}
-	return ilegalMove
+	// TODO:
+	// check movement.
+	// check if current king is in check.
+	// check if have do check or mate to other king.
 }
 
 void Board::_doMove(sMove move){
@@ -158,4 +126,45 @@ bool Board::_movementKnight(sMove move){
 		return true;
 	}
 	return false;
+}
+
+bool Board::_movementBishop(sMove move){
+	unsigned char ilet = move.iPos.let,
+	    					inum = move.iPos.num;
+	unsigned char llet = move.lPos.let,
+	    					lnum = move.lPos.num;
+
+
+}
+
+bool Board::_movementRook(sMove move){
+	unsigned char ilet = move.iPos.let,
+	    					inum = move.iPos.num;
+	unsigned char llet = move.lPos.let,
+	    					lnum = move.lPos.num;
+
+  if(ilet != llet && inum == lnum){ // horizontal movement
+		if(ilet < llet)
+		  for(short l = ilet+1; l<llet; i++)
+			  if(board[l][inum] != empt)
+					return false;
+		else
+			for(short l = llet+1; l<ilet; i++)
+				if(board[l][inum] != empt)
+					return false;
+
+		return true;
+	}
+	if(ilet == llet && inum != lnum){ // vertical movement
+		if(inum < lnum)
+		  for(short n = inum+1; l<lnum; i++)
+			  if(board[ilet][n] != empt)
+					return false;
+		else
+			for(short l = lnum+1; l<inum; i++)
+				if(board[ilet][n] != empt)
+					return false;
+
+		return true;
+	}
 }

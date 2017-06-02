@@ -12,13 +12,13 @@ public:
 		wPawn, // white pieces
 		wKnight,
 		wBishop,
-		wTower,
+		wRook,
 		wQueen,
 		wKing,
 		bPawn, // black pieces
 		bKnight,
 		bBishop,
-		bTower,
+		bRook,
 		bQueen,
 		bKing
 	};
@@ -82,4 +82,6 @@ private:
 
 	bool _movementPawn(sMove move);
 	bool _movementKnight(sMove move);
+	bool _movementBishop(sMove move);
+	bool _movementRook(sMove move);
 };
