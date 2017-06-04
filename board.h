@@ -58,10 +58,6 @@ public:
   };
 
 private:
-  tBoard board; //< board where play
-  eBoardStatus status;	//< actual status of match
-  bool whiteTurn; //< true if white must play, false if black must play
-
 public:
   /** constructor */
   Board();
@@ -77,11 +73,20 @@ public:
   eMoveResp addMove(sMove move);
 
 private:
+  // https://isocpp.org/wiki/faq/pointers-to-members
+  typedef bool (*_movementPtr)(tBoard &board, sMove move);
+
+  tBoard board; //< board where play
+  eBoardStatus status;	//< actual status of match
+  bool whiteTurn; //< true if white must play, false if black must play
+
   /** do move in board */
   inline void _doMove(sMove move);
 
-  bool _movementPawn(sMove move);
-  bool _movementKnight(sMove move);
-  bool _movementBishop(sMove move);
-  bool _movementRook(sMove move);
+  bool _movementPawn(tBoard &board, sMove move);
+  bool _movementKnight(tBoard &board, sMove move);
+  bool _movementBishop(tBoard &board, sMove move);
+  bool _movementRook(tBoard &board, sMove move);
+  bool _movementQueen(tBoard &board, sMove move);
+  bool _movementKing(tBoard &board, sMove move);
 };

@@ -66,18 +66,33 @@ Board::eMoveResp Board::addMove(Board::sMove move){
   if(!whiteTurn && board[llet][lnum] >= bPawn && board[llet][lnum] <= bKing)
     return ilegalMove;
 
-  // TODO:
   // check movement.
+  _movementPtr movementsPtrs[] = {
+    &_movementPawn,
+    &_movementKnight,
+    &_movementBishop,
+    &_movementRook,
+    &_movementQueen,
+    &_movementKing
+  }
+
+  ePiece pawn = wPawn;
+  if(!whiteTurn)
+    pawn = bPawn;
+  if(!movementsPtrs[static_cast<size_t>(board[ilet][inum] - pawn)](board, move))
+    return ilegalMove;
+
+  // TODO:
   // check if current king is in check.
   // check if have do check or mate to other king.
 }
 
-void Board::_doMove(sMove move){
+void Board::_doMove(tBoard board, sMove move){
   board[move.lPos.let][.lPos.num] = board[move.iPos.let][.iPos.num];
   board[move.iPos.let][.iPos.num] = empt;
 }
 
-bool Board::_movementPawn(sMove move){
+bool Board::_movementPawn(tBoard board, sMove move){
   unsigned char ilet = move.iPos.let,
                 inum = move.iPos.num;
   unsigned char llet = move.lPos.let,
@@ -109,7 +124,7 @@ bool Board::_movementPawn(sMove move){
   return false;
 }
 
-bool Board::_movementKnight(sMove move){
+bool Board::_movementKnight(tBoard board, sMove move){
   unsigned char ilet = move.iPos.let,
                 inum = move.iPos.num;
   unsigned char llet = move.lPos.let,
@@ -128,7 +143,7 @@ bool Board::_movementKnight(sMove move){
   return false;
 }
 
-bool Board::_movementBishop(sMove move){
+bool Board::_movementBishop(tBoard board, sMove move){
   unsigned char ilet = move.iPos.let,
                 inum = move.iPos.num;
   unsigned char llet = move.lPos.let,
@@ -137,7 +152,7 @@ bool Board::_movementBishop(sMove move){
 
 }
 
-bool Board::_movementRook(sMove move){
+bool Board::_movementRook(tBoard board, sMove move){
   unsigned char ilet = move.iPos.let,
                 inum = move.iPos.num;
   unsigned char llet = move.lPos.let,
